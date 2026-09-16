@@ -1,0 +1,57 @@
+# =====================================================================
+# Fly.io
+# =====================================================================
+# Ganti `app` menjadi nama yang Anda pilih, lalu:
+#   fly launch --no-deploy      (sekali, untuk membuat aplikasinya)
+#   fly volumes create paragon_data --size 1 --region sin
+#   fly secrets set JWT_SECRET=... ALLOWED_ORIGIN=https://domain-anda.vercel.app
+#   fly deploy
+# =====================================================================
+
+app = "paragon-supply-hub-api"
+
+# Singapura — pusat data terdekat dari Jakarta. Setiap panggilan API adalah
+# satu perjalanan bolak-balik, dan jaraknya terasa.
+primary_region = "sin"
+
+[build]
+  dockerfile = "Dockerfile"
+
+# Volume inilah yang membuat SQLite mungkin di sini. Tanpa mount ini, berkas
+# basis data hilang setiap kali mesin dibuat ulang.
+[[mounts]]
+  source = "paragon_data"
+  destination = "/data"
+
+[env]
+  PORT = "8080"
+  NODE_ENV = "production"
+  DB_FILE = "/data/paragon.db"
+  STORAGE_DIR = "/data/storage"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+
+  # SQLite hanya mengizinkan satu penulis, dan volume hanya dapat dipasang ke
+  # satu mesin. Karena itu tepat satu instance — bukan penghematan, melainkan
+  # syarat. Dua mesin yang menunjuk volume sama akan saling merusak.
+  min_machines_running = 1
+  auto_stop_machines = false
+  auto_start_machines = true
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 40
+    hard_limit = 80
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/api/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
