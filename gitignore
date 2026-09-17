@@ -1,0 +1,51 @@
+# =====================================================================
+# Environment
+# =====================================================================
+# Nilai asli TIDAK PERNAH masuk git. Vercel membaca env var dari dashboard
+# Project Settings, bukan dari file ini — filenya cuma untuk `npm run dev`
+# di komputer sendiri.
+.env
+.env.local
+.env.*.local
+
+# =====================================================================
+# Dependencies & build output
+# =====================================================================
+node_modules/
+dist/
+build/
+.vite/
+
+# =====================================================================
+# Backend Node lama (server/) — dipertahankan sebagai referensi, tapi
+# data dan node_modules-nya sendiri tetap tidak perlu ikut git
+# =====================================================================
+server/node_modules/
+server/data/
+server/storage/
+server/*.db
+server/*.sqlite
+server/*.sqlite3
+
+# =====================================================================
+# Supabase CLI — berkas kerja lokal, bukan bagian dari skema
+# =====================================================================
+supabase/.branches/
+supabase/.temp/
+
+# =====================================================================
+# Editor & OS
+# =====================================================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# =====================================================================
+# Log
+# =====================================================================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
